@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using School_Management_API.Data.DTOs;
+using School_Management_API.Data.DTOs.StudentDTOs;
 using School_Management_API.Data.Services;
 using School_Management_API.Models;
 using System.Collections;
@@ -22,8 +24,17 @@ namespace School_Management_API.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Student>>> GetStudent()
 		{
-			var list = await _service.GetAllAsync();
-			return Ok(list);
+			var students = await _service.GetAllAsync();
+			var studentsDto = from s in students
+							  select new StudentDto()
+							  {
+								  Id = s.Id,
+								  Name = s.Name,
+								  Phonenumber = s.PhoneNumber,
+								  Email = s.Email,
+								  Sex = s.Sex
+							  };
+			return Ok(studentsDto); 
 		}
 
 		//Get: Api/Student/1
@@ -40,8 +51,20 @@ namespace School_Management_API.Controllers
 
 		//Post: Api/student
 		[HttpPost]
-		public async Task<ActionResult<Student>> Create (Student student)
+		public async Task<ActionResult<Student>> Create (Student CreateStudentDto)
 		{
+			var student = new Student
+			{
+				Name = CreateStudentDto.Name,
+				ParentName = CreateStudentDto.ParentName,
+				DateOfbirth = CreateStudentDto.DateOfbirth,
+				Address = CreateStudentDto.Address,
+				PhoneNumber = CreateStudentDto.PhoneNumber,
+				Email = CreateStudentDto.Email,
+				Password = CreateStudentDto.Password,
+				Sex = CreateStudentDto.Sex
+			};
+
 			if (!ModelState.IsValid) return student;
 			await _service.AddAsync(student);
 			return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);

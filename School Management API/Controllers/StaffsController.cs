@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using School_Management_API.Data.DTOs.StaffDTOs;
 using School_Management_API.Data.Services;
 using School_Management_API.Models;
 
@@ -20,8 +21,16 @@ namespace School_Management_API.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Staff>>> GetStaff()
 		{
-			var result = await _service.GetAllAsync();
-			return Ok(result);
+			var staff = await _service.GetAllAsync();
+			var staffDto = from s in staff
+							select new StaffDto
+							{
+								Name = s.Name,
+								PhoneNumber = s.PhoneNumber,
+								Email = s.Email,
+								Sex = s.Sex
+							};
+			return Ok(staffDto);
 		}
 
 		//Get: Api/Staff/1
@@ -38,8 +47,18 @@ namespace School_Management_API.Controllers
 
 		//Post: Api/staff
 		[HttpPost]
-		public async Task<ActionResult<Staff>> Create (Staff staff)
+		public async Task<ActionResult<Staff>> Create (Staff createStaffDto)
 		{
+			var staff = new Staff
+			{
+				Name = createStaffDto.Name,
+				DateJoined = createStaffDto.DateJoined,
+				DateOfbirth = createStaffDto.DateOfbirth,
+				Address = createStaffDto.Address,
+				PhoneNumber = createStaffDto.PhoneNumber,
+				Email = createStaffDto.Email,
+				Sex = createStaffDto.Sex
+			};
 			if (!ModelState.IsValid) return staff;
 			await _service.AddAsync(staff);
 			return CreatedAtAction(nameof(GetStaff), new { id = staff.Id }, staff);
