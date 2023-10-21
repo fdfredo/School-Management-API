@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using School_Management_API.Data.Authentication;
 using School_Management_API.Models;
 
 namespace School_Management_API.Data
 {
-	public class AppDbContext:DbContext 
+	public class AppDbContext:IdentityDbContext<ApplicationUser> 
 	{
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
