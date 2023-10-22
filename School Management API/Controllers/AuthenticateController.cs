@@ -16,7 +16,8 @@ namespace School_Management_API.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
-        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> 
+			roleManager, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -25,7 +26,7 @@ namespace School_Management_API.Controllers
 
 		[HttpPost]
 		[Route("login")]
-		public async Task<IActionResult> Login([FromBody] LoginModel model)
+		public async Task<IActionResult> Login(LoginModel model)
 		{
 			var user = await userManager.FindByNameAsync(model.Username);
 			if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
@@ -43,7 +44,7 @@ namespace School_Management_API.Controllers
 					authClaims.Add(new Claim(ClaimTypes.Role, userRole));
 				}
 
-				var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+				var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
 
 				var token = new JwtSecurityToken(
 					issuer: _configuration["JWT:ValidIssuer"],
@@ -110,7 +111,6 @@ namespace School_Management_API.Controllers
 			{
 				await userManager.AddToRoleAsync(user, UserRoles.Admin);
 			}
-
 			return Ok(new Response { Status = "Success", Message = "User created successfully!" });
 		}
 	}
